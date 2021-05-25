@@ -26,6 +26,7 @@ class SpiderSession:
     """
     Session相关操作
     """
+
     def __init__(self):
         self.cookies_dir_path = "./cookies/"
         self.user_agent = global_config.getRaw('config', 'DEFAULT_USER_AGENT')
@@ -101,6 +102,7 @@ class QrLogin:
     """
     扫码登录
     """
+
     def __init__(self, spider_session: SpiderSession):
         """
         初始化扫码登录
@@ -111,10 +113,8 @@ class QrLogin:
         :param spider_session:
         """
         self.qrcode_img_file = 'qr_code.png'
-
         self.spider_session = spider_session
         self.session = self.spider_session.get_session()
-
         self.is_login = False
         self.refresh_login_status()
 
@@ -302,12 +302,14 @@ class JdSeckill(object):
         """
         用户登陆态校验装饰器。若用户未登陆，则调用扫码登陆
         """
+
         @functools.wraps(func)
         def new_func(self, *args, **kwargs):
             if not self.qrlogin.is_login:
                 logger.info("{0} 需登陆后调用，开始扫码登陆".format(func.__name__))
                 self.login_by_qrcode()
             return func(self, *args, **kwargs)
+
         return new_func
 
     @check_login
@@ -362,7 +364,7 @@ class JdSeckill(object):
 
     def make_reserve(self):
         """商品预约"""
-        logger.info('商品名称:{}'.format(self.get_sku_title()))
+        logger.info('商品预约,名称:{}'.format(self.get_sku_title()))
         url = 'https://yushou.jd.com/youshouinfo.action?'
         payload = {
             'callback': 'fetchJSON',
@@ -459,7 +461,7 @@ class JdSeckill(object):
     def request_seckill_url(self):
         """访问商品的抢购链接（用于设置cookie等"""
         logger.info('用户:{}'.format(self.get_username()))
-        logger.info('商品名称:{}'.format(self.get_sku_title()))
+        logger.info('商品抢购，商品名称:{}'.format(self.get_sku_title()))
         self.timers.start()
         self.seckill_url[self.sku_id] = self.get_seckill_url()
         logger.info('访问商品的抢购连接...')
